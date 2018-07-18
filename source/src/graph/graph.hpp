@@ -5,9 +5,18 @@
 #include <iosfwd>
 #include <functional>
 #include <limits>
+#include <initializer_list>
 
 namespace algo
 {
+
+enum class cmp_res
+{
+    LT,
+    GT,
+    EQ,
+    NEQ
+};
 
 class graph
 {
@@ -55,11 +64,10 @@ private:
 std::vector<graph> undirected_graph_from_text_input(std::istream&);
 void print_undirected_graph(const graph&, std::ostream&);
 
-void for_each_node_bfs(const graph&, graph::vert_ind, std::function<void(graph::vert_ind)>);
-void for_each_node_dfs(const graph&, graph::vert_ind, std::function<void(graph::vert_ind)>);
+void bfs_for_each_visited(const graph&, graph::vert_ind, std::function<void(graph::vert_ind)>);
+void dfs_for_each_visited(const graph&, graph::vert_ind, std::function<void(graph::vert_ind)>);
 
 graph::vert_ind find_mother_vertex(const graph& g);
-
 
 class matrix
 {
@@ -80,12 +88,12 @@ private:
         index row_index;
     };
 public:
-    matrix(index r, index c, value_type v = 0)
-        : rows{r}, cols{c}, data(rows * cols, v)
-    {
-    }
+    matrix(index r, index c, value_type v = 0);
+    matrix(std::initializer_list<std::initializer_list<int>>);
 
     row operator[](index);
+
+    cmp_res cmp(const matrix& rhs) const;
 
 private:
 
@@ -96,4 +104,9 @@ private:
 
     std::vector<value_type> data;
 };
+
+inline bool operator==(const matrix& lhs, const matrix& rhs) { return (lhs.cmp(rhs) == cmp_res::EQ); }
+inline bool operator!=(const matrix& lhs, const matrix& rhs) { return not (lhs == rhs); }
+
+matrix transitive_closure(graph const& g);
 }

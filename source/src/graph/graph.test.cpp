@@ -47,7 +47,7 @@ TEST_CASE("bfs visits all nodes")
 
     std::vector<algo::graph::vert_ind> visited;
     const std::vector<algo::graph::vert_ind> expected = {0, 1, 2, 3};
-    for_each_node_bfs(g, 0, [&](auto v) { visited.push_back(v); });
+    bfs_for_each_visited(g, 0, [&](auto v) { visited.push_back(v); });
 
     std::sort(visited.begin(), visited.end());
     REQUIRE(visited == expected);
@@ -66,7 +66,7 @@ TEST_CASE("dfs visits all nodes")
     std::vector<algo::graph::vert_ind> visited;
     const std::vector<algo::graph::vert_ind> expected = {0, 1, 2, 3};
 
-    for_each_node_dfs(g, 2, [&](auto v) { visited.push_back(v); });
+    dfs_for_each_visited(g, 2, [&](auto v) { visited.push_back(v); });
 
     std::sort(visited.begin(), visited.end());
     REQUIRE(visited == expected);
@@ -97,4 +97,27 @@ TEST_CASE("when matrix is constructed then it is initialized with zeros and acce
     REQUIRE(m[1][0] == 0);
     REQUIRE(m[1][1] == 0);
     REQUIRE(m[1][2] == 0);
+}
+
+TEST_CASE("given small example graph when transitive_closure is called, it returns square matrix with trasitive closure")
+{
+    algo::graph g(4);
+    g.add_directed_edge(0, 1);
+    g.add_directed_edge(0, 2);
+    g.add_directed_edge(1, 2);
+    g.add_directed_edge(2, 0);
+    g.add_directed_edge(2, 3);
+    g.add_directed_edge(3, 3);
+
+    algo::matrix result = algo::transitive_closure(g);
+
+    REQUIRE(result[0][0] == 1);
+    REQUIRE(result[3][0] == 0);
+
+    const algo::matrix expected_result = {{ 1, 1, 1, 1},
+                                         { 1, 1, 1, 1},
+                                         { 1, 1, 1, 1},
+                                         { 0, 0, 0, 1}};
+
+    REQUIRE(result == expected_result);
 }
