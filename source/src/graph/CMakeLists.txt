@@ -7,3 +7,5 @@ add_executable(graph.test
 	graph.test.cpp)
 
 target_link_libraries(graph.test graph boost_contract boost_system)
+
+add_test(NAME graph.test COMMAND graph.test)
